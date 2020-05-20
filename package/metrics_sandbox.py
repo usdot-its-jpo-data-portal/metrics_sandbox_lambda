@@ -43,7 +43,7 @@ def process_lines(log):
     '''
     global pageviews,wydot_bsm_downloads,wydot_tim_downloads,tampa_bsm_downloads,tampa_spat_downloads,tampa_tim_downloads,nyc_bsm_downloads,nyc_spat_downloads,nyc_map_downloads
     for line in log:
-        if " REST.GET.OBJECT " in line:
+        if " REST.GET.OBJECT " in line and " arn:aws:sts::016250538866:" not in line:
             row = line.split(" ")
             item = row[row.index("REST.GET.OBJECT") + 1]
             if item == "index.html":
@@ -60,7 +60,7 @@ def process_lines(log):
                     tampa_spat_downloads += 1
                 else:
                     tampa_tim_downloads += 1
-            elif "nyc" in item:
+            elif "nycdot" in item:
                 if "BSM" in item:
                     nyc_bsm_downloads += 1
                 elif "SPAT" in item:
@@ -119,7 +119,7 @@ def lambda_handler(event, context):
         conn.commit()
         cur.close()
         conn.close()
-         
+
         credentials = get_credentials()
         # http = credentials.authorize(httplib2.Http())
         service = discovery.build('sheets', 'v4', credentials=credentials)
